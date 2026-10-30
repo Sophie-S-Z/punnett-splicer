@@ -33,6 +33,14 @@ export function StudioForm({
       onOpenChange={(v) => {
         if (!pending) {
           setOpen(v);
+          if (!v && createOpen) {
+            const query = new URLSearchParams(window.location.search);
+            query.delete("create");
+            router.replace(
+              `${window.location.pathname}${query.size ? `?${query}` : ""}`,
+              { scroll: false },
+            );
+          }
           setError("");
         }
       }}
