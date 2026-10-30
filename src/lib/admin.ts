@@ -3,6 +3,13 @@ import { redirect } from "next/navigation";
 
 export type Access = Awaited<ReturnType<typeof adminAccess>>;
 export async function adminAccess() {
+  // Fail closed before creating a client when an owner has not configured
+  // the new project yet. This also keeps framework error-page builds safe.
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
+    return { state: "setup" as const, client: null, user: null };
   const client = await createClient();
   const { data, error } = await client.auth.getUser();
   if (error || !data.user)
